@@ -18,18 +18,18 @@ function Passenger(props) {
         <MapView style={styles.map}
             provider={PROVIDER_DEFAULT}
             initialRegion={{
-                latitude: -23.561747,
-                longitude: -46.656244,
+                latitude: -19.962750341762025, 
+                longitude: -44.199746071281346,
                 latitudeDelta: 0.004,
                 longitudeDelta: 0.004
             }}
         >
             <Marker coordinate={{
-                latitude: -23.561747,
-                longitude: -46.656244
+                latitude: -19.962750341762025,
+                longitude: -44.199746071281346
             }}
-                title="Heber Stein Mazutti"
-                description="Av. Paulista, 1500"
+                title="Giovani"
+                description="Av. Juiz Marco Túlio Isaac"
                 image={icons.location}
                 style={styles.marker}
             />
