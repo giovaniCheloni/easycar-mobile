@@ -2,34 +2,88 @@ import { Text, TextInput, View } from "react-native";
 import MyButton from "../../components/mybutton/mybutton.jsx";
 import MapView, { Marker, PROVIDER_DEFAULT } from "react-native-maps";
 import { styles } from "./ride-detail.style.js";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import icons from "../../constants/icons.js";
+import { api, HandleError } from "../../constants/api.js";
 
 
 function RideDetail(props) {
 
-    const [myLocation, setMyLocation] = useState({
-        latitude: 20,
-        longitude: 20
-    });
+    const rideId = props.route.params.rideId;
+    const userId = props.route.params.userId;
+    const [title, setTitle] = useState("");
+    const [ride, setRide] = useState({});
+
+    async function RequestRideDetail() {
+
+        try {
+            const response = await api.get("/rides/" + rideId);
+
+            if (response.data) {
+                setRide(response.data);
+                setTitle(response.data.passenger_name + " - " + response.data.passenger_phone);
+            }
+        } catch (error) {
+            HandleError(error);
+            props.navigation.goBack();
+        }
+    }
+
+    async function AcceptRide() {
+        const json = {
+            driver_user_id: userId,
+        }
+
+        try {
+            const response = await api.put("rides/" + rideId + "/accept", json);
+
+            if (response.data)
+                props.navigation.goBack();
+
+        } catch (error) {
+            HandleError(error);
+            props.navigation.goBack();
+        }
+    }
+
+    async function CancelRide() {
+        const json = {
+            driver_user_id: userId,
+        }
+
+        try {
+            const response = await api.put("rides/" + rideId + "/cancel", json);
+
+            if (response.data)
+                props.navigation.goBack();
+
+        } catch (error) {
+            HandleError(error);
+            props.navigation.goBack();
+        }
+    }
+
+    useEffect(() => {
+        RequestRideDetail();
+    }, []);
 
 
     return <View style={styles.container}>
         <MapView style={styles.map}
             provider={PROVIDER_DEFAULT}
             initialRegion={{
-                latitude: -23.561747,
-                longitude: -46.656244,
+                latitude: Number(ride.pickup_latitude),
+                longitude: Number(ride.pickup_longitude),
                 latitudeDelta: 0.004,
                 longitudeDelta: 0.004
             }}
         >
             <Marker coordinate={{
-                latitude: -23.561747,
-                longitude: -46.656244
+                latitude: Number(ride.pickup_latitude),
+                longitude: Number(ride.pickup_longitude),
             }}
-                title="Heber Stein Mazutti"
-                description="Av. Paulista, 1500"
+                title={ride.passenger_name}
+                description={ride.pickup_address}
                 image={icons.location}
                 style={styles.marker}
             />
@@ -37,20 +91,28 @@ function RideDetail(props) {
         </MapView>
         <View style={styles.footer}>
             <View style={styles.footerText}>
-                <Text>Encontre a sua carona</Text>
+                <Text>{title}</Text>
             </View>
 
             <View style={styles.footerFields}>
                 <Text>Origem</Text>
-                <TextInput style={styles.input} />
+                <TextInput style={styles.input}
+                    value={ride.pickup_address}
+                    editable={false} />
             </View>
 
             <View style={styles.footerFields}>
                 <Text>Destino</Text>
-                <TextInput style={styles.input} />
+                <TextInput style={styles.input}
+                    value={ride.dropoff_address}
+                    editable={false} />
             </View>
         </View>
-        <MyButton text="ACEITAR" />
+        {ride.status == "P" && <MyButton text="ACEITAR" theme="default"
+            onClick={AcceptRide} />}
+
+        {ride.status == "A" && <MyButton text="CANCELAR" theme="red"
+            onClick={CancelRide} />}
     </View>
 }
 

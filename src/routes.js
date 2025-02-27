@@ -21,23 +21,20 @@ function Routes() {
                 options={{
                     headerShadowVisible: false,
                     headerTitle: "",
-                    headerTransparent: true,
-                    animation: "slide_from_right"
+                    headerTransparent: true
                 }} />
 
             <Stack.Screen name="ride" component={Ride}
                 options={{
                     headerTitle: "Viagens Disponíveis",
-                    headerTitleAlign: "center",
-                    animation: "slide_from_left"
+                    headerTitleAlign: "center"
                 }} />
 
             <Stack.Screen name="ride-detail" component={RideDetail}
                 options={{
                     headerShadowVisible: false,
                     headerTitle: "",
-                    headerTransparent: true,
-                    animation: "slide_from_bottom"
+                    headerTransparent: true
                 }} />
 
 
